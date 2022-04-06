@@ -5,7 +5,3 @@ projectfiles
 mbed-os
 BUILD
 
-
-# libraries
-libboxzoo
-bugzoo-u8g2
