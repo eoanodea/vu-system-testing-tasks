@@ -1,3 +1,38 @@
+#include "mbed.h"
+#include "board_freedom.h"
+#include "adc.h"
+#include "oled_ssd1322.h"
+#include <cstdint>
+#include <cstdio>
+#include <array>
+float readTemperature(){
+    // Read the 0th analog in (library docs has more info)
+    uint16_t analog_in_value = adc_read(0);
+    // Convert 16 bit value to voltage and temperature.
+    float const voltage = (analog_in_value * 3.0) / 65535.0 ;
+    float temperature = (voltage * 1000 - 400) / 19.5 ;
+    return temperature;
+}
+
+void initDisplay(){
+    // Preamble
+    board_init();
+    u8g2_ClearBuffer(&oled);
+    u8g2_SetFont(&oled, u8g2_font_6x12_mr);
+    u8g2_SendBuffer(&oled);}
+
+void displayErrorMessage(char const *message){
+    // Clear screen and write a message.
+    u8g2_ClearBuffer(&oled);
+    u8g2_DrawUTF8(&oled, 10, 10, message);
+    u8g2_SendBuffer(&oled);
+    // Also write the message over USB to the serial monitor just for testing
+    printf("%s\n", message);}
+
+void displaySensorTemperature(float temperature){
+std::array<char, 50> msg {};
+std::snprintf(msg.data(), msg.size(), "Temperature is %d C", static_cast<int>(temperature));
+displayErrorMessage(msg.data());}
 
 int main(){
     initDisplay();
